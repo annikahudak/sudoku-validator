@@ -38,15 +38,22 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // fileNametb
             // 
+            this.fileNametb.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fileNametb.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.fileNametb.Location = new System.Drawing.Point(126, 97);
+            this.fileNametb.Location = new System.Drawing.Point(160, 174);
             this.fileNametb.Name = "fileNametb";
-            this.fileNametb.Size = new System.Drawing.Size(201, 20);
+            this.fileNametb.Size = new System.Drawing.Size(283, 27);
             this.fileNametb.TabIndex = 0;
             this.fileNametb.Text = "ex: \"test1.csv\"";
             this.fileNametb.MouseClick += new System.Windows.Forms.MouseEventHandler(this.fileNametb_MouseClick);
@@ -54,10 +61,10 @@
             // 
             // goBtn
             // 
-            this.goBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.goBtn.Location = new System.Drawing.Point(352, 95);
+            this.goBtn.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.goBtn.Location = new System.Drawing.Point(451, 174);
             this.goBtn.Name = "goBtn";
-            this.goBtn.Size = new System.Drawing.Size(75, 23);
+            this.goBtn.Size = new System.Drawing.Size(75, 27);
             this.goBtn.TabIndex = 1;
             this.goBtn.Text = "Go";
             this.goBtn.UseVisualStyleBackColor = true;
@@ -66,10 +73,10 @@
             // filename_label
             // 
             this.filename_label.AutoSize = true;
-            this.filename_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.filename_label.Location = new System.Drawing.Point(123, 68);
+            this.filename_label.Font = new System.Drawing.Font("Verdana", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.filename_label.Location = new System.Drawing.Point(157, 143);
             this.filename_label.Name = "filename_label";
-            this.filename_label.Size = new System.Drawing.Size(194, 18);
+            this.filename_label.Size = new System.Drawing.Size(225, 18);
             this.filename_label.TabIndex = 2;
             this.filename_label.Text = "Please enter a file name:";
             // 
@@ -86,7 +93,7 @@
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.Location = new System.Drawing.Point(164, 68);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(293, 330);
+            this.dataGridView1.Size = new System.Drawing.Size(291, 327);
             this.dataGridView1.TabIndex = 3;
             // 
             // update_label
@@ -95,7 +102,7 @@
             this.update_label.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.update_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.update_label.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.update_label.Location = new System.Drawing.Point(168, 19);
+            this.update_label.Location = new System.Drawing.Point(166, 19);
             this.update_label.Name = "update_label";
             this.update_label.Size = new System.Drawing.Size(0, 29);
             this.update_label.TabIndex = 4;
@@ -105,7 +112,7 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(24, 68);
+            this.label1.Location = new System.Drawing.Point(10, 70);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(0, 16);
             this.label1.TabIndex = 5;
@@ -115,7 +122,7 @@
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(27, 144);
+            this.label2.Location = new System.Drawing.Point(12, 121);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(0, 16);
             this.label2.TabIndex = 6;
@@ -126,16 +133,65 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.label3.Location = new System.Drawing.Point(487, 72);
+            this.label3.Location = new System.Drawing.Point(10, 174);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(0, 20);
             this.label3.TabIndex = 7;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(476, 72);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(0, 20);
+            this.label4.TabIndex = 8;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(175, 42);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(267, 18);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "1    2    3    4    5    6    7    8    9";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(136, 79);
+            this.label6.MaximumSize = new System.Drawing.Size(20, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(19, 306);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "1  2  3  4  5  6  7  8  9";
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 426);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(624, 22);
+            this.statusStrip1.TabIndex = 11;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 428);
+            this.ClientSize = new System.Drawing.Size(624, 448);
+            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -144,11 +200,14 @@
             this.Controls.Add(this.goBtn);
             this.Controls.Add(this.fileNametb);
             this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.label5);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Sudoku Validator";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -164,6 +223,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }
 

@@ -22,6 +22,8 @@ namespace Sudoku
             this.CenterToScreen();
             dataGridView1.Hide();
             update_label.Hide();
+            label5.Hide();
+            label6.Hide();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -39,6 +41,7 @@ namespace Sudoku
             testThread[0] = tid1;
             testThread[1] = tid2;
 
+
             for (int i = 2; i < 11; ++i)
             {
                 Thread tid = new Thread(new ThreadStart(MyThread.Thread3));
@@ -47,23 +50,29 @@ namespace Sudoku
             }
             foreach (Thread myThread in testThread)
             {
-                update_label.Text = "Starting Thread " + (Array.IndexOf(testThread, myThread) + 1);
+                this.toolStripStatusLabel1.Text= "Starting Thread " + (Array.IndexOf(testThread, myThread) + 1);
+                this.Refresh();
+                //update_label.Text = "Starting Thread " + (Array.IndexOf(testThread, myThread) + 1);
+                update_label.Text = "Now validating " + MyThread.getCurrentThreadString() + "...";
                 update_label.Refresh();
-                Thread.Sleep(1000);
+                Thread.Sleep(1500);
                 myThread.Start();
             }
             foreach (Thread myThread in testThread)
             {
                 myThread.Join();
-                update_label.Text = "Threads joined.";
-                update_label.Refresh();
+                //update_label.Text = "Threads joined.";
+                //update_label.Refresh();
+                this.toolStripStatusLabel1.Text = "Threads joined";
+                this.Refresh();
             }
-            
+
             /* Cross check all problem rows with all problem columns, then use square
                 to determine what numbers are missing and compare with those rows and columns
                 to not make duplicates */
-
-            if(MyThread.getProblemRows().Count != 0 && MyThread.getProblemColumns().Count != 0)
+            label5.Show();
+            label6.Show();
+            if (MyThread.getProblemRows().Count != 0 && MyThread.getProblemColumns().Count != 0)
             {
                 label1.Text = "Problem rows: \n" + string.Join(", ", MyThread.getProblemRows());
                 label1.Refresh();
@@ -77,6 +86,7 @@ namespace Sudoku
                     {
                         Tuple<int, int> tuple = new Tuple<int, int>(r, c);
                         problems.Add(tuple);
+                        dataGridView1.Rows[r-1].Cells[c-1].Style.BackColor = Color.Red;
                     }
                 }
 
@@ -98,16 +108,25 @@ namespace Sudoku
                 }
 
                 var missingRowList = new List<IEnumerable<int>>();
+                HashSet<Tuple<int,int[]>> rowTuples = new HashSet<Tuple<int, int[]>>();
+
                 foreach(int rowM in MyThread.getProblemRows())
                 {
+
                     List<int> list2 = new List<int>();
                     for(int g = 0; g < 9; g++)
                     {
-                        list2.Add(grid[rowM, g]);
+                        list2.Add(grid[rowM-1, g]);
                     }
                     var missing = Enumerable.Range(1, 9).Except(list2);
                     missingRowList.Add(missing);
+
+                    Tuple<int, int[]> rowValue = new Tuple<int, int[]>(rowM, missing.ToArray());
+                    rowTuples.Add(rowValue);
+
                 }
+
+                HashSet<Tuple<int, int[]>> colTuples = new HashSet<Tuple<int, int[]>>();
 
                 var missingColList = new List<IEnumerable<int>>();
                 foreach(int colM in MyThread.getProblemColumns())
@@ -115,17 +134,31 @@ namespace Sudoku
                     List<int> list3 = new List<int>();
                     for(int g = 0; g < 9; g++)
                     {
-                        list3.Add(grid[g, colM]);
+                        list3.Add(grid[g, colM-1]);
                     }
                     var missing = Enumerable.Range(1, 9).Except(list3);
                     missingColList.Add(missing);
+
+                    Tuple<int, int[]> colValue = new Tuple<int, int[]>(colM, missing.ToArray());
+                    colTuples.Add(colValue);
+
                 }
 
-
-
+                update_label.Hide();
+                label4.Text = "SOLUTION: \n";
+               
                 foreach(Tuple<int,int> t in problems)
                 {
-                    
+                    foreach(Tuple<int, int[]> tc in colTuples)
+                    {
+                        if(tc.Item1 == t.Item2){
+                            
+                            label4.Text += t + " => " + tc.Item2[0] + "\n";
+                            label4.Refresh();
+                           // MessageBox.Show(" 1) Value at row " + t.Item1 + " and column " + t.Item2 + " should be " + tc.Item2[0]);
+                            
+                        }
+                    }
                 }
             }
             else
@@ -194,6 +227,7 @@ namespace Sudoku
             dataGridView1.Show();
             update_label.Show();
             dataGridView1.Refresh();
+            
        }
 
         //Read file
@@ -242,11 +276,14 @@ namespace Sudoku
         public static int rowNum = 0;
         public static int colNum = 0;
 
+        public static string currentThread = "";
 
         public static void Thread1()
         {
             
             Console.WriteLine("Hello I am Row Thread");
+            currentThread = "rows";
+
             var nums = new HashSet<int>();
             for (int i = 0; i < 9; i++)
             {
@@ -269,6 +306,8 @@ namespace Sudoku
         public static void Thread2()
         {
             Console.WriteLine("Hello I am Column Thread");
+
+            currentThread = "columns";
 
             var nums = new HashSet<int>();
              for (int j = 0; j < 9; j++)
@@ -293,6 +332,7 @@ namespace Sudoku
         public static void Thread3()
         {
             Console.WriteLine("Hello I am Square Thread");
+            currentThread = "squares";
 
             int[,] miniArray = new int[3,3];
             int row_Index = 0;
@@ -345,6 +385,10 @@ namespace Sudoku
         public static HashSet<int> getProblemColumns()
         {
             return problemColumns;
+        }
+        public static string getCurrentThreadString()
+        {
+            return currentThread;
         }
     }
 }
