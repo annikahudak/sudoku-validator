@@ -14,8 +14,7 @@ namespace Sudoku
     public partial class Form1 : Form
     {
         int[,] grid = new int[9,9];
-        int finalRow;
-        int finalCol;
+        HashSet<Tuple<int,int>> problems = new HashSet<Tuple<int,int>>();
 
         public Form1()
         {
@@ -59,28 +58,84 @@ namespace Sudoku
                 update_label.Text = "Threads joined.";
                 update_label.Refresh();
             }
-            label1.Text = "Problem rows: \n" + string.Join(",", MyThread.getProblemRows());
-            label1.Refresh();
-
-            label2.Text = "Problem columns: \n" + string.Join(",", MyThread.getProblemColumns());
-            label2.Refresh();
-
+            
             /* Cross check all problem rows with all problem columns, then use square
                 to determine what numbers are missing and compare with those rows and columns
                 to not make duplicates */
 
-
-            foreach(int r in MyThread.getProblemRows())
+            if(MyThread.getProblemRows().Count != 0 && MyThread.getProblemColumns().Count != 0)
             {
-                if (MyThread.getProblemColumns().Contains(r))
+                label1.Text = "Problem rows: \n" + string.Join(", ", MyThread.getProblemRows());
+                label1.Refresh();
+
+                label2.Text = "Problem columns: \n" + string.Join(", ", MyThread.getProblemColumns());
+                label2.Refresh();
+
+                foreach(int r in MyThread.getProblemRows())
                 {
-                    //problem = r;
+                    foreach(int c in MyThread.getProblemColumns())
+                    {
+                        Tuple<int, int> tuple = new Tuple<int, int>(r, c);
+                        problems.Add(tuple);
+                    }
+                }
+
+                label3.Text = "Fix: \n" + string.Join(", ", problems);
+                label3.Refresh();
+
+                //dataGridView1.Rows[rowIndex].Cells[columnIndex].Style.BackColor = Color.Red;
+
+                //var list = new List<int>(new[] { 1, 2, 4, 7, 9 });
+                // var result = Enumerable.Range(0, 10).Except(list);
+
+                var missingSquareList = new List<IEnumerable<int>>();
+                foreach (Square s in Square.getSquares())
+                {
+                    List<int> list = s.getSquare().Cast<int>().ToList();
+                    var missing = Enumerable.Range(1, 9).Except(list);
+                    missingSquareList.Add(missing);
+                    //MessageBox.Show(string.Join(", ", result));
+                }
+
+                var missingRowList = new List<IEnumerable<int>>();
+                foreach(int rowM in MyThread.getProblemRows())
+                {
+                    List<int> list2 = new List<int>();
+                    for(int g = 0; g < 9; g++)
+                    {
+                        list2.Add(grid[rowM, g]);
+                    }
+                    var missing = Enumerable.Range(1, 9).Except(list2);
+                    missingRowList.Add(missing);
+                }
+
+                var missingColList = new List<IEnumerable<int>>();
+                foreach(int colM in MyThread.getProblemColumns())
+                {
+                    List<int> list3 = new List<int>();
+                    for(int g = 0; g < 9; g++)
+                    {
+                        list3.Add(grid[g, colM]);
+                    }
+                    var missing = Enumerable.Range(1, 9).Except(list3);
+                    missingColList.Add(missing);
+                }
+
+
+
+                foreach(Tuple<int,int> t in problems)
+                {
+                    
                 }
             }
-            foreach(Square s in Square.getSquares())
+            else
             {
-                
+                label3.Text = "Valid solution";
+                label3.Refresh();
             }
+           
+             
+           
 
 
         }
@@ -336,6 +391,10 @@ public class Square
     public int getCol()
     {
         return this.colIndex;
+    }
+    public int[,] getSquare()
+    {
+        return this.square;
     }
 
 }
