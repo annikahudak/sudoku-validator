@@ -14,6 +14,8 @@ namespace Sudoku
     public partial class Form1 : Form
     {
         int[,] grid = new int[9,9];
+        int finalRow;
+        int finalCol;
 
         public Form1()
         {
@@ -42,6 +44,7 @@ namespace Sudoku
             {
                 Thread tid = new Thread(new ThreadStart(MyThread.Thread3));
                 testThread[i] = tid;
+               
             }
             foreach (Thread myThread in testThread)
             {
@@ -56,6 +59,29 @@ namespace Sudoku
                 update_label.Text = "Threads joined.";
                 update_label.Refresh();
             }
+            label1.Text = "Problem rows: \n" + string.Join(",", MyThread.getProblemRows());
+            label1.Refresh();
+
+            label2.Text = "Problem columns: \n" + string.Join(",", MyThread.getProblemColumns());
+            label2.Refresh();
+
+            /* Cross check all problem rows with all problem columns, then use square
+                to determine what numbers are missing and compare with those rows and columns
+                to not make duplicates */
+
+
+            foreach(int r in MyThread.getProblemRows())
+            {
+                if (MyThread.getProblemColumns().Contains(r))
+                {
+                    //problem = r;
+                }
+            }
+            foreach(Square s in Square.getSquares())
+            {
+                
+            }
+
 
         }
         void readFile()
@@ -157,11 +183,9 @@ namespace Sudoku
         public static int[,] g = new int[9, 9];
         public static HashSet<int> problemRows = new HashSet<int>();
         public static HashSet<int> problemColumns = new HashSet<int>();
-        public static HashSet<int[]> problemSquares = new HashSet<int[]>();
-        public static HashSet<int> correct = new HashSet<int>();
 
-        public static int rowNum = -3;
-        public static int colNum = -3;
+        public static int rowNum = 0;
+        public static int colNum = 0;
 
 
         public static void Thread1()
@@ -176,7 +200,7 @@ namespace Sudoku
 
                 if (row.Distinct().Count() != 9)
                 {
-                    problemRows.Add(i);
+                    problemRows.Add(i+1);
                 }
             }
 
@@ -199,7 +223,7 @@ namespace Sudoku
 
                  if (column.Distinct().Count() != 9)
                  {
-                     problemColumns.Add(j);
+                     problemColumns.Add(j+1);
                  }
              }
             Console.WriteLine("PROB COLUMNS");
@@ -215,38 +239,57 @@ namespace Sudoku
         {
             Console.WriteLine("Hello I am Square Thread");
 
-            int[] miniArray = new int[9];
-            int index = 0;
-            for(int i = rowNum + 3; i < i + 3; i++)
+            int[,] miniArray = new int[3,3];
+            int row_Index = 0;
+            int col_Index = 0;
+           
+            Square s = new Square(rowNum, colNum);
+
+            for(int i = rowNum; i < rowNum + 3; i++)
             {
-                for(int j = colNum + 3; j < j + 3; j++)
+                for(int j = colNum; j < colNum + 3; j++)
                 {
-                    miniArray[index] = g[i, j];
-                    index++;
+                    // Console.WriteLine("COL INDEX " + colIndex);
+                  // Console.WriteLine("IM NOT OUT OF BOUNDS " + row_Index + " " + col_Index);
+                  //  Console.WriteLine("BUT AM I OUT OF BOUNDS ?? " + rowNum + " " + colNum);
+                   // Console.WriteLine("i - " + i + " j - " + j);
+                    miniArray[row_Index, col_Index] = g[i, j];
+                    
+                    col_Index++;
+                    
                 }
+               // Console.WriteLine("ROW INDEX " + row_Index);
+                row_Index++;
+                col_Index = 0;
             }
-
-            for(int k = 0; k < 9; k++)
+            s.setSquare(miniArray);
+            s.checkSquare();
+            
+            if(rowNum == 6)
             {
-                if (!miniArray.Contains(k))
-                {
-                    problemSquares.Add(miniArray);
-                }
+                rowNum = 0;
+                colNum += 3;
             }
-
-
+            else
+            {
+                rowNum += 3;
+            }
         }
         public static void setGrid(int[,] grid)
         {
             g = grid;
-            for(int i = 0; i < 9; ++i)
-            {
-                correct.Add(i);
-            } 
         }
         public static int[,] getGrid()
         {
             return g;
+        }
+        public static HashSet<int> getProblemRows()
+        {
+            return problemRows;
+        }
+        public static HashSet<int> getProblemColumns()
+        {
+            return problemColumns;
         }
     }
 }
@@ -254,11 +297,45 @@ public class Square
 {
     int rowIndex;
     int colIndex;
-    int[,] square;
+    int[,] square = new int[3,3];
+    HashSet<int> squareList = new HashSet<int>();
+    public static List<Square> problemSquares = new List<Square>();
 
     public Square(int r, int c)
     {
         this.rowIndex = r;
         this.colIndex = c;
     }
+    public void setSquare(int[,] s)
+    {
+        this.square = s;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                squareList.Add(square[i, j]);
+            }
+        }
+    }
+    public void checkSquare()
+    {
+      if(squareList.Count() != 9)
+        {
+            problemSquares.Add(this);
+           // Console.WriteLine("hello i am square -- " + this.rowIndex + " " + this.colIndex);
+        }
+    }
+    public static List<Square> getSquares()
+    {
+        return problemSquares;
+    }
+    public int getRow()
+    {
+        return this.rowIndex;
+    }
+    public int getCol()
+    {
+        return this.colIndex;
+    }
+
 }
