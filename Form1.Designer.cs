@@ -57,7 +57,6 @@
             this.fileNametb.TabIndex = 0;
             this.fileNametb.Text = "ex: \"test1.csv\"";
             this.fileNametb.MouseClick += new System.Windows.Forms.MouseEventHandler(this.fileNametb_MouseClick);
-            this.fileNametb.TextChanged += new System.EventHandler(this.fileNametb_TextChanged);
             // 
             // goBtn
             // 
@@ -204,7 +203,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Sudoku Validator";
-            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

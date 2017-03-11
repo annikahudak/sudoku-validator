@@ -11,9 +11,12 @@ using System.Threading;
 
 namespace Sudoku
 {
+    // MAIN class
     public partial class Form1 : Form
     {
+        // Sudoku Grid
         int[,] grid = new int[9,9];
+        // Invalid indices 
         HashSet<Tuple<int,int>> problems = new HashSet<Tuple<int,int>>();
 
         public Form1()
@@ -26,21 +29,96 @@ namespace Sudoku
             label6.Hide();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        // Init program
+        private void goBtn_Click(object sender, EventArgs e)
         {
+            readFile();
+
+            if (readFile())
+            {
+                fileNametb.Hide();
+                goBtn.Hide();
+                filename_label.Hide();
+
+                printGrid();
+                init();
+
+                MyThread.setGrid(grid);
+            }
+        }
+
+        bool readFile()
+        {
+            string line;
+            var lines = new List<string[]>();
+            try
+            {
+                System.IO.StreamReader file = new System.IO.StreamReader(fileNametb.Text);
+                while ((line = file.ReadLine()) != null)
+                {
+                    string[] Line = line.Split(',');
+                    lines.Add(Line);
+                }
+
+                file.Close();
+                var data = lines.ToArray();
+                for (int i = 0; i < 9; ++i)
+                {
+                    for (int j = 0; j < 9; ++j)
+                    {
+                        grid[i, j] = Int32.Parse(data[i][j]);
+                    }
+
+                }
+                MyThread.setGrid(grid);
+                return true;
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("File not found.");
+            }
+            return false;
+        }
+
+        void printGrid()
+        {
+
+            this.dataGridView1.ColumnCount = 9;
+
+            for (int x = 0; x < 9; x++)
+            {
+                DataGridViewRow row = new DataGridViewRow();
+                row.CreateCells(this.dataGridView1);
+
+                for (int y = 0; y < 9; y++)
+                {
+                    row.Cells[y].Value = grid[x, y];
+                }
+                this.dataGridView1.Rows.Add(row);
+            }
+            this.dataGridView1.ColumnHeadersVisible = false;
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+
+            dataGridView1.Show();
+            update_label.Show();
+            dataGridView1.Refresh();
 
         }
         void init()
         {
-            Console.WriteLine("Before start thread");
-
             Thread[] testThread = new Thread[11];
+
+            // Explicitly create threads
             Thread tid1 = new Thread(new ThreadStart(MyThread.Thread1));
             Thread tid2 = new Thread(new ThreadStart(MyThread.Thread2));
 
             testThread[0] = tid1;
             testThread[1] = tid2;
-
 
             for (int i = 2; i < 11; ++i)
             {
@@ -48,30 +126,28 @@ namespace Sudoku
                 testThread[i] = tid;
                
             }
+            // Start threads
             foreach (Thread myThread in testThread)
             {
                 this.toolStripStatusLabel1.Text= "Starting Thread " + (Array.IndexOf(testThread, myThread) + 1);
                 this.Refresh();
-                //update_label.Text = "Starting Thread " + (Array.IndexOf(testThread, myThread) + 1);
                 update_label.Text = "Now validating " + MyThread.getCurrentThreadString() + "...";
                 update_label.Refresh();
                 Thread.Sleep(1500);
                 myThread.Start();
             }
+            // Join threads
             foreach (Thread myThread in testThread)
             {
                 myThread.Join();
-                //update_label.Text = "Threads joined.";
-                //update_label.Refresh();
                 this.toolStripStatusLabel1.Text = "Threads joined";
                 this.Refresh();
             }
 
-            /* Cross check all problem rows with all problem columns, then use square
-                to determine what numbers are missing and compare with those rows and columns
-                to not make duplicates */
             label5.Show();
             label6.Show();
+
+            // Calculate errors
             if (MyThread.getProblemRows().Count != 0 && MyThread.getProblemColumns().Count != 0)
             {
                 label1.Text = "Problem rows: \n" + string.Join(", ", MyThread.getProblemRows());
@@ -86,17 +162,15 @@ namespace Sudoku
                     {
                         Tuple<int, int> tuple = new Tuple<int, int>(r, c);
                         problems.Add(tuple);
+                        dataGridView1.Rows[r - 1].DefaultCellStyle.BackColor = Color.MistyRose;
+                        dataGridView1.Columns[c - 1].DefaultCellStyle.BackColor = Color.MistyRose;
                         dataGridView1.Rows[r-1].Cells[c-1].Style.BackColor = Color.Red;
+                        
                     }
                 }
 
                 label3.Text = "Fix: \n" + string.Join(", ", problems);
                 label3.Refresh();
-
-                //dataGridView1.Rows[rowIndex].Cells[columnIndex].Style.BackColor = Color.Red;
-
-                //var list = new List<int>(new[] { 1, 2, 4, 7, 9 });
-                // var result = Enumerable.Range(0, 10).Except(list);
 
                 var missingSquareList = new List<IEnumerable<int>>();
                 foreach (Square s in Square.getSquares())
@@ -104,7 +178,6 @@ namespace Sudoku
                     List<int> list = s.getSquare().Cast<int>().ToList();
                     var missing = Enumerable.Range(1, 9).Except(list);
                     missingSquareList.Add(missing);
-                    //MessageBox.Show(string.Join(", ", result));
                 }
 
                 var missingRowList = new List<IEnumerable<int>>();
@@ -112,7 +185,6 @@ namespace Sudoku
 
                 foreach(int rowM in MyThread.getProblemRows())
                 {
-
                     List<int> list2 = new List<int>();
                     for(int g = 0; g < 9; g++)
                     {
@@ -123,7 +195,6 @@ namespace Sudoku
 
                     Tuple<int, int[]> rowValue = new Tuple<int, int[]>(rowM, missing.ToArray());
                     rowTuples.Add(rowValue);
-
                 }
 
                 HashSet<Tuple<int, int[]>> colTuples = new HashSet<Tuple<int, int[]>>();
@@ -155,7 +226,6 @@ namespace Sudoku
                             
                             label4.Text += t + " => " + tc.Item2[0] + "\n";
                             label4.Refresh();
-                           // MessageBox.Show(" 1) Value at row " + t.Item1 + " and column " + t.Item2 + " should be " + tc.Item2[0]);
                             
                         }
                     }
@@ -166,100 +236,8 @@ namespace Sudoku
                 label3.Text = "Valid solution";
                 label3.Refresh();
             }
-           
-             
-           
-
-
         }
-        void readFile()
-        {
-            //int[,] grid = new int[9, 9];
-            string line;
-            var lines = new List<string[]>();
-
-            // Read the file and display it line by line.
-            System.IO.StreamReader file = new System.IO.StreamReader(fileNametb.Text);
-            while ((line = file.ReadLine()) != null)
-            {
-                string[] Line = line.Split(',');
-                lines.Add(Line);
-                //Console.WriteLine(line);
-
-            }
-
-            file.Close();
-            var data = lines.ToArray();
-            for (int i = 0; i < 9; ++i)
-            {
-                for (int j = 0; j < 9; ++j)
-                {
-                    grid[i, j] = Int32.Parse(data[i][j]);
-                }
-
-            }
-            MyThread.setGrid(grid);
-        }
-        void printGrid()
-        {
-
-            this.dataGridView1.ColumnCount = 9;
-
-            for (int x = 0; x < 9; x++)
-            {
-                DataGridViewRow row = new DataGridViewRow();
-                row.CreateCells(this.dataGridView1);
-
-                for (int y = 0; y < 9; y++)
-                {
-                    row.Cells[y].Value = grid[x, y];
-                }
-                this.dataGridView1.Rows.Add(row);
-            }
-            this.dataGridView1.ColumnHeadersVisible = false;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
-            this.dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-           
-
-            dataGridView1.Show();
-            update_label.Show();
-            dataGridView1.Refresh();
-            
-       }
-
-        //Read file
-        private void goBtn_Click(object sender, EventArgs e)
-        {
-            readFile();
-
-            fileNametb.Hide();
-            goBtn.Hide();
-            filename_label.Hide();
-            
-            printGrid();
-            init();
-
-            Console.WriteLine("GRID");
-
-            for (int i = 0; i < 9; ++i)
-            {
-                for (int j = 0; j < 9; ++j)
-                {
-                    Console.WriteLine(grid[i, j]);
-                }
-            }
-            Console.WriteLine("END GRID");
-
-                    MyThread.setGrid(grid);
-        }
-
-        private void fileNametb_TextChanged(object sender, EventArgs e)
-        {
-          
-        }
+       
 
         private void fileNametb_MouseClick(object sender, MouseEventArgs e)
         {
@@ -269,7 +247,7 @@ namespace Sudoku
     }
     public class MyThread
     {
-        public static int[,] g = new int[9, 9];
+        public static int[,] g = new int[9, 9]; //copy of input grid
         public static HashSet<int> problemRows = new HashSet<int>();
         public static HashSet<int> problemColumns = new HashSet<int>();
 
@@ -280,58 +258,37 @@ namespace Sudoku
 
         public static void Thread1()
         {
-            
-            Console.WriteLine("Hello I am Row Thread");
             currentThread = "rows";
 
             var nums = new HashSet<int>();
             for (int i = 0; i < 9; i++)
             {
                 var row = Enumerable.Range(0, 9).Select(x => g[i, x]);
-                //Console.WriteLine("{0}", string.Join(",", column));
 
                 if (row.Distinct().Count() != 9)
                 {
                     problemRows.Add(i+1);
                 }
             }
-
-            Console.WriteLine("PROB ROWS");
-            foreach(int n in problemRows){
-                Console.WriteLine(n);
-            }
-            Console.WriteLine("END PROB ROWS");
-
         }
         public static void Thread2()
         {
-            Console.WriteLine("Hello I am Column Thread");
-
             currentThread = "columns";
 
             var nums = new HashSet<int>();
              for (int j = 0; j < 9; j++)
              {
                  var column = Enumerable.Range(0, 9).Select(x => g[x, j]);
-                 //Console.WriteLine("{0}", string.Join(",", column));
 
                  if (column.Distinct().Count() != 9)
                  {
                      problemColumns.Add(j+1);
                  }
              }
-            Console.WriteLine("PROB COLUMNS");
-
-           foreach (int n in problemColumns)
-            {
-                Console.WriteLine(n);
-            }
-            Console.WriteLine("END PROB COLUMNS");
 
         }
         public static void Thread3()
         {
-            Console.WriteLine("Hello I am Square Thread");
             currentThread = "squares";
 
             int[,] miniArray = new int[3,3];
@@ -344,16 +301,9 @@ namespace Sudoku
             {
                 for(int j = colNum; j < colNum + 3; j++)
                 {
-                    // Console.WriteLine("COL INDEX " + colIndex);
-                  // Console.WriteLine("IM NOT OUT OF BOUNDS " + row_Index + " " + col_Index);
-                  //  Console.WriteLine("BUT AM I OUT OF BOUNDS ?? " + rowNum + " " + colNum);
-                   // Console.WriteLine("i - " + i + " j - " + j);
                     miniArray[row_Index, col_Index] = g[i, j];
-                    
                     col_Index++;
-                    
                 }
-               // Console.WriteLine("ROW INDEX " + row_Index);
                 row_Index++;
                 col_Index = 0;
             }
@@ -421,7 +371,6 @@ public class Square
       if(squareList.Count() != 9)
         {
             problemSquares.Add(this);
-           // Console.WriteLine("hello i am square -- " + this.rowIndex + " " + this.colIndex);
         }
     }
     public static List<Square> getSquares()
